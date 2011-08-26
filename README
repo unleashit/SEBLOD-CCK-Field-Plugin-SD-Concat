@@ -2,18 +2,17 @@
 CCK FIELD PLUGIN FOR SEBLOD 2.0 CCK FOR JOOMLA 1.7
 --------------------------------------------------
 
-	Name:			SD Concat
-	Author:			Simon Dowdles - www.onestuckpixel.com
-	Twitter:		@simondowdles
+Name: SD Concat
+Author: Simon Dowdles - www.onestuckpixel.com
+Twitter: @simondowdles
+
+Description
+
+Concatenates any cck fields, plain text values & limited pre-defined variables into one value. Ideal for unique titles
 	
-	----------------------------------------------
-	
-	Description:	Concatenates any cck fields, plain text values & limited pre-defined variables into one value. Ideal for unique titles
-	
-	Instructions:	*Plain text to appear in square brackets like [plain text here]. Fields enclosed with # like #field_name# and predefined variables like $date, $time, $username & $userid
-					*All fields (cck, plain text and variables) are to be comma separated
-					*Field Separator determines the character used to glue all values together.
-					*Example: [Article crated by],$username,[on],$date,[in category ID],#art_catid# 
-					*Results in: "Article created by Simon Dowdles on 2011-08-26 in category ID 9" where I would have used NO field separator character.
-					
-	-----------------------------------------------
+Instructions
+
+*Plain text to appear in square brackets like [plain text here]. Fields enclosed with # like #field_name# and predefined variables like $date, $time, $username & $userid
+*All fields (cck, plain text and variables) are to be comma separated
+*Field Separator determines the character used to glue all values together.
+*Example: [Article crated by],$username,[on],$date,[in category ID],#art_catid# *Results in: "Article created by Simon Dowdles on 2011-08-26 in category ID 9" where I would have used NO field separator character.
