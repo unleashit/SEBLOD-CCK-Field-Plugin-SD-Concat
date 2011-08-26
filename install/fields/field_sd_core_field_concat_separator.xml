@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cck type="fields">
+	<author>Seblod</author>
+	<authoremail>contact@seblod.com</authoremail>
+	<authorurl>http://www.seblod.com</authorurl>
+	<copyright>Copyright (C) 2011 Seblod. All Rights Reserved.</copyright>
+	<license>GNU General Public License version 2 or later.</license>
+	<field>
+		<id />
+		<title>SD Core Field Concat Separator</title>
+		<name>sd_core_field_concat_separator</name>
+		<folder>quick_folder</folder>
+		<type>text</type>
+		<description>&lt;p&gt;The character you want to use to bind your values together. Can be any character (up to 2 chars long) and can also be a space.&lt;/p&gt;</description>
+		<published />
+		<label>Value Separator</label>
+		<selectlabel> </selectlabel>
+		<display>3</display>
+		<required />
+		<validation />
+		<defaultvalue />
+		<options />
+		<options2 />
+		<minlength />
+		<maxlength>2</maxlength>
+		<size>10</size>
+		<cols />
+		<rows />
+		<ordering />
+		<sorting />
+		<divider />
+		<bool />
+		<location />
+		<extended />
+		<style />
+		<script />
+		<bool2 />
+		<bool3 />
+		<bool4 />
+		<bool5 />
+		<bool6 />
+		<bool7 />
+		<bool8 />
+		<css />
+		<attributes />
+		<storage>dev</storage>
+		<storage_location />
+		<storage_table />
+		<storage_field>json[options2][sd_core_field_concat_separator]</storage_field>
+		<storage_field2 />
+		<storage_params />
+		<storages />
+		<checked_out />
+		<checked_out_time>0000-00-00 00:00:00</checked_out_time>
+	</field>
+</cck>
