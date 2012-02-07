@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cck type="fields">
-	<author>Seblod</author>
-	<authoremail>contact@seblod.com</authoremail>
-	<authorurl>http://www.seblod.com</authorurl>
-	<copyright>Copyright (C) 2011 Seblod. All Rights Reserved.</copyright>
+	<author>Simon Dowdles</author>
+	<authoremail>simon@onestuckpixel.com</authoremail>
+	<authorurl>http://www.onestuck.com</authorurl>
+	<copyright>Copyright (C) 2011 Simon Dowdles. All Rights Reserved.</copyright>
 	<license>GNU General Public License version 2 or later.</license>
 	<field>
 		<id />
-		<title>SD Core field Concat List</title>
-		<name>sd_core_field_concat_list</name>
+		<title>SD Core field Concat Enable JText</title>
+		<name>sd_core_field_concat_enable_jtext</name>
 		<folder>quick_folder</folder>
-		<type>text</type>
-		<description>&lt;p&gt;A comma separated list of fields you want to concatenate.&lt;/p&gt;</description>
+		<type>radio</type>
+		<description>Choose to enable or disable automatic JText implementation on your text values</description>
 		<published />
-		<label>Field List</label>
-		<selectlabel> </selectlabel>
+		<label>Enable JText</label>
+		<selectlabel></selectlabel>
 		<display>3</display>
 		<required />
 		<validation />
-		<defaultvalue />
-		<options />
+		<defaultvalue>0</defaultvalue>
+		<options>no=0||yes=1</options>
 		<options2 />
 		<minlength />
-		<maxlength>1000</maxlength>
+		<maxlength>255</maxlength>
 		<size>32</size>
 		<cols />
 		<rows />
@@ -46,7 +46,7 @@
 		<storage>dev</storage>
 		<storage_location />
 		<storage_table />
-		<storage_field>json[options2][sd_core_field_concat_list]</storage_field>
+		<storage_field>json[options2][sd_core_field_concat_enable_jtext]</storage_field>
 		<storage_field2 />
 		<storage_params />
 		<storages />

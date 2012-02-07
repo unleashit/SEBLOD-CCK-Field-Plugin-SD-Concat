@@ -7,13 +7,13 @@
 	<license>GNU General Public License version 2 or later.</license>
 	<field>
 		<id />
-		<title>SD Core field Concat List</title>
-		<name>sd_core_field_concat_list</name>
+		<title>SD Core field Concat Date Format</title>
+		<name>sd_core_field_concat_date_format</name>
 		<folder>quick_folder</folder>
 		<type>text</type>
-		<description>&lt;p&gt;A comma separated list of fields you want to concatenate.&lt;/p&gt;</description>
+		<description>Date format using any of PHP's date() function formatters</description>
 		<published />
-		<label>Field List</label>
+		<label>Date Format</label>
 		<selectlabel> </selectlabel>
 		<display>3</display>
 		<required />
@@ -22,7 +22,7 @@
 		<options />
 		<options2 />
 		<minlength />
-		<maxlength>1000</maxlength>
+		<maxlength>255</maxlength>
 		<size>32</size>
 		<cols />
 		<rows />
@@ -46,7 +46,7 @@
 		<storage>dev</storage>
 		<storage_location />
 		<storage_table />
-		<storage_field>json[options2][sd_core_field_concat_list]</storage_field>
+		<storage_field>json[options2][sd_core_field_concat_date_format]</storage_field>
 		<storage_field2 />
 		<storage_params />
 		<storages />
