@@ -8,7 +8,7 @@
 	<authorUrl>http://www.onestuckpixel.com</authorUrl>
 	<copyright>Copyright (C) 2011 Simon Dowdles. All Rights Reserved.</copyright>
 	<license>GNU General Public License version 2 or later.</license>
-	<version>2.1.3</version>
+	<version>2.1.2</version>
 	<description>Easily concatenate many fields and use them as a value. Ideal for constructing unique titles.</description>
 	
 	<scriptfile>install/script.php</scriptfile>

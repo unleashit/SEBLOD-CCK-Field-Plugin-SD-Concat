@@ -106,7 +106,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 		#############################################################
 		
 		$user = JFactory::getUser();
-		$options2 = JCckDev::fromJSON( $field->options2 );
+		$options2 = CCK_Dev::fromJSON( $field->options2 );
 		$sdFieldList = @$options2['sd_core_field_concat_list'];
 		$SdJtext = @$options2['sd_core_field_concat_enable_jtext'];
 		$SdUserDateFormat = @$options2['sd_core_field_concat_date_format'];
