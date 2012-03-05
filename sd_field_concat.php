@@ -58,9 +58,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 			$id		=	$field->name;
 			$name	=	$field->name;
 		}
-		$value		=	( $value != '' ) ? $value : $field->defaultvalue;
-		$value		=	( $value != ' ' ) ? $value : '';
-		$value		=	htmlspecialchars( $value, ENT_QUOTES );
+		$value	=	( $value != '' ) ? $value : $field->defaultvalue;
+		$value	=	( $value != ' ' ) ? $value : '';
+		$value	=	htmlspecialchars( $value, ENT_QUOTES );
 		
 		// Validate
 		$validate	=	'';
@@ -224,7 +224,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 				elseif(preg_match("^[#(.*)#]^", $sdField)):
 					$sdField = trim(str_replace('#','',$sdField));
 					$sdFieldTmp = JCckDevField::getObject($sdField);
-					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'radio' || $sdFieldTmp->type == 'checkbox' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
 							switch($sdFieldTextValue){
 								case 't':
 									$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
@@ -240,12 +240,35 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 								break;
 							};
-					}else{
+						}elseif($sdFieldTmp->type == 'select_multiple' || ($sdFieldTmp->type == 'checkbox' && is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'radio' && is_array($config['post'][$sdField]))){
+							switch($sdFieldTextValue){
+								case 't':
+									$SdValHolder = "";
+									foreach($config['post'][$sdField] as $selectOption){
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).$sdFieldSeparator;
+									}
+									$sdConcatValue .= $SdValHolder;
+									$SdValHolder = '';
+								break;
+								
+								case 'v':
+									$SdValHolder = "";
+									foreach($config['post'][$sdField] as $selectOption){
+										$SdValHolder .= trim($selectOption).$sdFieldSeparator;
+									}
+									$sdConcatValue .= $SdValHolder;
+									$SdValHolder = '';
+								break;
+								
+								default:
+									//($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+								break;
+							};
+						}else{
 						($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 					};				
 				endif;
 			endforeach;
-
 		else:
 			/* SINGLE FIELDS*/
 				$sdConcatValue = '';
@@ -348,7 +371,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 				elseif(preg_match("^[#(.*)#]^", $sdField)):
 					$sdField = trim(str_replace('#','',$sdField));
 					$sdFieldTmp = JCckDevField::getObject($sdField);
-					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'radio' || $sdFieldTmp->type == 'checkbox' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
 							switch($sdFieldTextValue){
 								case 't':
 									$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
@@ -364,8 +387,34 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 								break;
 							};
-					}else{
+					}elseif($sdFieldTmp->type == 'select_multiple' || ($sdFieldTmp->type == 'checkbox' && is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'radio' && is_array($config['post'][$sdField]))){
+							switch($sdFieldTextValue){
+								case 't':
+									$SdValHolder = "";
+									foreach($config['post'][$sdField] as $selectOption){
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).$sdFieldSeparator;
+									}
+									$sdConcatValue .= $SdValHolder;
+									$SdValHolder = '';
+								break;
+								
+								case 'v':
+									$SdValHolder = "";
+									foreach($config['post'][$sdField] as $selectOption){
+										$SdValHolder .= trim($selectOption).$sdFieldSeparator;
+									}
+									$sdConcatValue .= $SdValHolder;
+									$SdValHolder = '';
+								break;
+								
+								default:
+									//($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+								break;
+							};
+						}
+					else{
 						($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+						
 					};				
 				endif;
 				/* END SINGLE FEILD */
