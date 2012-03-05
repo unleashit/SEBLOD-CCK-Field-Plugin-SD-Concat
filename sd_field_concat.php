@@ -244,8 +244,11 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 							switch($sdFieldTextValue){
 								case 't':
 									$SdValHolder = "";
+									$SdArrayCount = count($config['post'][$sdField]);
+									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
-										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).$sdFieldSeparator;
+										$s++;
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
@@ -253,8 +256,12 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 								
 								case 'v':
 									$SdValHolder = "";
+									$SdValHolder = "";
+									$SdArrayCount = count($config['post'][$sdField]);
+									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
-										$SdValHolder .= trim($selectOption).$sdFieldSeparator;
+										$s++;
+										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
@@ -391,8 +398,11 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 							switch($sdFieldTextValue){
 								case 't':
 									$SdValHolder = "";
+									$SdArrayCount = count($config['post'][$sdField]);
+									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
-										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).$sdFieldSeparator;
+										$s++;
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
@@ -400,8 +410,11 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 								
 								case 'v':
 									$SdValHolder = "";
+									$SdArrayCount = count($config['post'][$sdField]);
+									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
-										$SdValHolder .= trim($selectOption).$sdFieldSeparator;
+										$s++;
+										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';

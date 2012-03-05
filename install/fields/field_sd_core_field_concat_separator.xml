@@ -22,7 +22,7 @@
 		<options />
 		<options2 />
 		<minlength />
-		<maxlength>2</maxlength>
+		<maxlength>25</maxlength>
 		<size>10</size>
 		<cols />
 		<rows />
