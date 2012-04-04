@@ -1,11 +1,10 @@
 <?php
-/**
-* @version 			Seblod 2.0 More $Revision: 147 $
-* @package			Seblod (CCK for Joomla)
-* @author       	http://www.seblod.com
-* @copyright		Copyright (C) 2011 SEBLOD. All Rights Reserved.
-* @license 			GNU General Public License version 2 or later; see _LICENSE.php
-**/
+/*
+ * @Name		SD Field Concat
+ * @Author		Simon Dowdles
+ * @Website		www.onestuckpixel.com
+ *
+ **/
 
 // No Direct Access
 defined( '_JEXEC' ) or die;
@@ -17,6 +16,7 @@ defined( '_JEXEC' ) or die;
 class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 {
 	protected static $type	=	'sd_field_concat';
+	protected static $friendly	=	1;
 	protected static $path;
 	
 	// -------- -------- -------- -------- -------- -------- -------- -------- // Construct
@@ -27,6 +27,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 		if ( self::$type != $type ) {
 			return;
 		}
+		
 		parent::g_onCCK_FieldConstruct( $data );
 	}
 	
@@ -96,7 +97,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 	
 	// onCCK_FieldPrepareStore
 	public function onCCK_FieldPrepareStore( &$field, $value = '', &$config = array(), $inherit = array(), $return = false )
-	{
+	{	
 		if ( self::$type != $field->type ) {
 			return;
 		}
@@ -116,13 +117,13 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 		$sdFieldList = ( preg_match("^[||]^",$sdFieldList) ? explode("||",$sdFieldList) : $sdFieldList );
 		
 		$sdFieldTextValue = (@$options2['sd_core_field_concat_text_value'] > '' ? @$options2['sd_core_field_concat_text_value'] : 'v');
-
+		
 		if(is_array($sdFieldList)):
 			
 			$sdConcatValue = '';
 			$sdNumFields = count($sdFieldList);
 			$sdNumStep = 0;
-			
+	
 			foreach($sdFieldList as $sdField):
 				$sdNumStep++;
 				$sdField = trim($sdField);
@@ -132,7 +133,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 				/* Next Auto Increment */
 				$sebid = $config['pk'];
 				if(!$sebid > 0){	// Are we creating a new article? Yes
-				echo "we are add new, ";
+
 					$inifile = dirname(__FILE__).DS.'increments.ini';
 					if(JFile::exists($inifile)){
 						chmod($inifile, 0644);
@@ -225,7 +226,8 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 					$sdField = trim(str_replace('#','',$sdField));
 					$sdFieldTmp = JCckDevField::getObject($sdField);
 					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
-							switch($sdFieldTextValue){
+	
+						switch($sdFieldTextValue){
 								case 't':
 									$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
 									$sdConcatValue .= $sdFieldTmp;
@@ -248,9 +250,12 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
 										$s++;
-										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
+										$tempsep = "";
+										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
+									
 									$SdValHolder = '';
 								break;
 								
@@ -261,7 +266,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
 										$s++;
-										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
+										$tempsep = "";
+										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
+										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
@@ -276,7 +283,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 					};				
 				endif;
 			endforeach;
-		else:
+		else: 
 			/* SINGLE FIELDS*/
 				$sdConcatValue = '';
 				$sdNumFields = 1;
@@ -402,7 +409,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
 										$s++;
-										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
+										$tempsep = "";
+										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
+										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
@@ -414,7 +423,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 									$s = 0;
 									foreach($config['post'][$sdField] as $selectOption){
 										$s++;
-										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $sdFieldSeparator : NULL);
+										$tempsep = "";
+										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
+										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
 									$sdConcatValue .= $SdValHolder;
 									$SdValHolder = '';
