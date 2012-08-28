@@ -102,13 +102,18 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 			return;
 		}
 		
-		#############################################################
-		// SD FIELD CONCAT - SIMON DOWDLES - ONESTUCKPIXEL.COM
-		#############################################################
+		#################################################################
+		// SD FIELD CONCAT - SIMON DOWDLES - http://www.simondowdles.com
+		#################################################################
 		
 		$user = JFactory::getUser();
 		$options2 = JCckDev::fromJSON( $field->options2 );
 		$sdFieldList = @$options2['sd_core_field_concat_list'];
+		$processOnEdit = @$options2['sd_core_field_concat_process_edit'];
+		$isNew = $config['id'] == 0 ? true : false;
+		if(!$isNew && !$processOnEdit){
+			return;
+		}
 		$SdJtext = @$options2['sd_core_field_concat_enable_jtext'];
 		$SdUserDateFormat = @$options2['sd_core_field_concat_date_format'];
 		$SdDateFormat = ($SdUserDateFormat !== '' ? $SdUserDateFormat : 'Y-m-d');
@@ -211,6 +216,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 				
 				$sdField = $ai;
 				($sdField > '' ? $sdConcatValue .= $sdField.($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+				
 				/* End Next Auto Increment */
 				
 				elseif(preg_match("^[\[\]]^", $sdField)):
@@ -225,23 +231,59 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 				elseif(preg_match("^[#(.*)#]^", $sdField)):
 					$sdField = trim(str_replace('#','',$sdField));
 					$sdFieldTmp = JCckDevField::getObject($sdField);
-					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
-	
+					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'select_dynamic_cascade' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
+						
 						switch($sdFieldTextValue){
 								case 't':
-									$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
-									$sdConcatValue .= $sdFieldTmp;
-									$sdFieldTmp = '';
+									// Le select dynamic
+									if($sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+										// JSON > Array
+										$fieldOpt2 = JCckDev::fromJSON($sdFieldTmp->options2);
+										// Set Query to get select dynamic criteria (thanks Lionel!)
+										$query = 'SELECT '.$fieldOpt2['name'].' FROM '.$fieldOpt2['table'].' WHERE '.$fieldOpt2['value'].'="'.$config['post'][$sdField].'"';
+										// Get database object as string (thanks SEBLOD devs!)
+										$dynamicText =  JCckDatabase::loadResult($query);
+										if(trim($dynamicText) > ''):
+											$sdConcatValue .= $dynamicText;
+											$sdConcatValue .= ($sdNumStep < $sdNumFields ? $sdFieldSeparator : null);
+										endif;
+										$sdFieldTmp = '';
+									}else{ // if not dynamic
+										$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
+										if(trim($sdFieldTmp) > ''):
+											$sdConcatValue .= $sdFieldTmp;
+											$sdConcatValue .= ($sdNumStep < $sdNumFields ? $sdFieldSeparator : null);
+										endif;
+										$sdFieldTmp = '';
+									};
 								break;
 								
 								case 'v':
-									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									// Le select dynamic
+									if($sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+										// JSON > Array
+										$fieldOpt2 = JCckDev::fromJSON($sdFieldTmp->options2);
+										// Set Query to get select dynamic criteria (thanks Lionel!)
+										$query = 'SELECT '.$fieldOpt2['value'].' FROM '.$fieldOpt2['table'].' WHERE '.$fieldOpt2['value'].'="'.$config['post'][$sdField].'"';
+										// Get database object as string (thanks SEBLOD devs!)
+										$dynamicText =  JCckDatabase::loadResult($query);
+										if(trim($dynamicText) > ''):
+											$sdConcatValue .= $dynamicText;
+											$sdConcatValue .= ($sdNumStep < $sdNumFields ? $sdFieldSeparator : null);
+										endif;
+										$sdFieldTmp = '';
+									}else{
+										($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+										$sdFieldTmp = '';
+									}
 								break;
 								
 								default:
-									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									$sdFieldTmp = '';
 								break;
 							};
+
 						}elseif($sdFieldTmp->type == 'select_multiple' || ($sdFieldTmp->type == 'checkbox' && is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'radio' && is_array($config['post'][$sdField]))){
 							switch($sdFieldTextValue){
 								case 't':
@@ -254,8 +296,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
 										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
-									$sdConcatValue .= $SdValHolder;
-									
+									if(str_replace(' ','', $SdValHolder) > ''):
+										$sdConcatValue .= $SdValHolder;
+									endif;
 									$SdValHolder = '';
 								break;
 								
@@ -270,7 +313,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
 										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
-									$sdConcatValue .= $SdValHolder;
+									if(str_replace(' ','', $SdValHolder) > ''):
+										$sdConcatValue .= $SdValHolder;
+									endif;
 									$SdValHolder = '';
 								break;
 								
@@ -279,7 +324,7 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 								break;
 							};
 						}else{
-						($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+						($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 					};				
 				endif;
 			endforeach;
@@ -388,17 +433,47 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 					if($sdFieldTmp->type == 'select_simple' || $sdFieldTmp->type == 'select_dynamic' || ($sdFieldTmp->type == 'radio' && !is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'checkbox' && !is_array($config['post'][$sdField])) || $sdFieldTmp->type == 'select_dynamic_cascade'){
 							switch($sdFieldTextValue){
 								case 't':
-									$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
-									$sdConcatValue .= $sdFieldTmp;
-									$sdFieldTmp = '';
+									if($sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+										// JSON > Array
+										$fieldOpt2 = JCckDev::fromJSON($sdFieldTmp->options2);
+										// Set Query to get select dynamic criteria (thanks Lionel!)
+										$query = 'SELECT '.$fieldOpt2['name'].' FROM '.$fieldOpt2['table'].' WHERE '.$fieldOpt2['value'].'="'.$config['post'][$sdField].'"';
+										// Get database object as string (thanks SEBLOD devs!)
+										$dynamicText =  JCckDatabase::loadResult($query);
+										if(trim($dynamicText) > ''):
+											$sdConcatValue .= $dynamicText;
+											$sdConcatValue .= ($sdNumStep < $sdNumFields ? $sdFieldSeparator : null);
+										endif;
+										$sdFieldTmp = '';
+									}else{
+										$sdFieldTmp = parent::g_getOptionText( trim($config['post'][$sdField]), $sdFieldTmp->options, '', $config );
+										if(trim($sdFieldTmp) > ''):
+											$sdConcatValue .= $sdFieldTmp;
+										endif;
+										$sdFieldTmp = '';
+									}
 								break;
 								
 								case 'v':
-									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									if($sdFieldTmp->type == 'select_dynamic' || $sdFieldTmp->type == 'select_dynamic_cascade'){
+										// JSON > Array
+										$fieldOpt2 = JCckDev::fromJSON($sdFieldTmp->options2);
+										// Set Query to get select dynamic criteria (thanks Lionel!)
+										$query = 'SELECT '.$fieldOpt2['value'].' FROM '.$fieldOpt2['table'].' WHERE '.$fieldOpt2['value'].'="'.$config['post'][$sdField].'"';
+										// Get database object as string (thanks SEBLOD devs!)
+										$dynamicText =  JCckDatabase::loadResult($query);
+										if(trim($dynamicText) > ''):
+											$sdConcatValue .= $dynamicText;
+											$sdConcatValue .= ($sdNumStep < $sdNumFields ? $sdFieldSeparator : null);
+										endif;
+										$sdFieldTmp = '';
+									}else{
+										($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									}
 								break;
 								
 								default:
-									($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+									($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 								break;
 							};
 					}elseif($sdFieldTmp->type == 'select_multiple' || ($sdFieldTmp->type == 'checkbox' && is_array($config['post'][$sdField])) || ($sdFieldTmp->type == 'radio' && is_array($config['post'][$sdField]))){
@@ -413,7 +488,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
 										$SdValHolder .= parent::g_getOptionText( trim($selectOption), $sdFieldTmp->options, '', $config ).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
-									$sdConcatValue .= $SdValHolder;
+									if(trim($SdValHolder) > ''):
+										$sdConcatValue .= $SdValHolder;
+									endif;
 									$SdValHolder = '';
 								break;
 								
@@ -427,7 +504,9 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 										$sdFieldSeparator == "ns" || $sdFieldSeparator == "" ? $tempsep = " " : $tempsep = $sdFieldSeparator;
 										$SdValHolder .= trim($selectOption).($s !== $SdArrayCount ? $tempsep : NULL);
 									}
-									$sdConcatValue .= $SdValHolder;
+									if(trim($sdConcatValue) > ''):
+										$sdConcatValue .= $SdValHolder;
+									endif;
 									$SdValHolder = '';
 								break;
 								
@@ -437,17 +516,18 @@ class plgCCK_FieldSd_Field_Concat extends JCckPluginField
 							};
 						}
 					else{
-						($sdField > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
+						($sdField > '' && trim($config['post'][$sdField]) > '' ? $sdConcatValue .= trim($config['post'][$sdField]).($sdNumStep < $sdNumFields ? $sdFieldSeparator : null) : null);
 						
 					};				
 				endif;
 				/* END SINGLE FEILD */
 		endif;
+		// The final straw, the big guy, the heavy lifter!!!
 		$value = $sdConcatValue;
 		
-		##############################################################
-		// END SD FIELD CONCAT - SIMON DOWDLES - ONESTUCKPIXEL.COM
-		##############################################################
+		####################################################################
+		// END SD FIELD CONCAT - SIMON DOWDLES - http://www.simondowdles.com
+		####################################################################
 		
 		// Init
 		if ( count( $inherit ) ) {
